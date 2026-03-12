@@ -1,0 +1,201 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Plywood Quote 0.5mm</title>
+
+<style>
+
+body{
+font-family:Arial;
+max-width:390px;
+margin:auto;
+padding:10px;
+}
+
+h2{
+text-align:center;
+}
+
+input{
+width:100%;
+padding:10px;
+margin:5px 0;
+font-size:16px;
+box-sizing:border-box;
+}
+
+.row{
+margin-bottom:10px;
+}
+
+.label{
+font-weight:bold;
+}
+
+.result{
+font-size:18px;
+font-weight:bold;
+}
+
+.blue{
+color:blue;
+}
+
+.red{
+color:red;
+}
+
+</style>
+</head>
+
+<body>
+
+<h2>Plywood Quote 0.5mm</h2>
+
+<div class="row">
+<div class="label">Thickness (mm)</div>
+<input id="thickness">
+</div>
+
+<div class="row">
+<div class="label">Bundles</div>
+<input id="bundles">
+</div>
+
+<div class="row">
+<div class="label">PCS / Bundle</div>
+<input id="pcsBundle">
+</div>
+
+<div class="row">
+<div class="label">EXW / PCS (USD)</div>
+<input id="exwPcs">
+</div>
+
+<div class="row">
+<div class="label">EXW / CBM (USD)</div>
+<input id="exwCbm">
+</div>
+
+<div class="row">
+<div class="label">USD Rate</div>
+<input id="rate">
+</div>
+
+<div class="row">
+<div class="label">Logistics (VND)</div>
+<input id="logistics">
+</div>
+
+<div class="row">
+<div class="label">CFR Price (VND)</div>
+<input id="cfr">
+</div>
+
+<div class="row">
+<div class="label">CBM Buy</div>
+<input id="cbmBuy">
+</div>
+
+<div class="row">
+<div class="label">CBM Sell</div>
+<input id="cbmSell">
+</div>
+
+<hr>
+
+<div class="result">Width: 1220 mm</div>
+<div class="result">Length: 2440 mm</div>
+
+<div class="result">Thickness Sell: <span id="thSell"></span></div>
+<div class="result">Total PCS: <span id="pcs"></span></div>
+
+<div class="result">CBM Diff: <span id="cbmDiff"></span></div>
+
+<div class="result">Profit / CBM: <span id="profitCbm"></span></div>
+<div class="result">Profit Total: <span id="profitTotal"></span></div>
+
+<script>
+
+function format(x){
+if(x==""||x==null) return ""
+return Number(x).toLocaleString()
+}
+
+document.querySelectorAll("input").forEach(i=>{
+i.addEventListener("input",calc)
+})
+
+function val(id){
+let v=document.getElementById(id).value.replace(/,/g,'')
+return Number(v)||0
+}
+
+function calc(){
+
+let thickness=val("thickness")
+let bundles=val("bundles")
+let pcsBundle=val("pcsBundle")
+
+let exwPcs=val("exwPcs")
+let exwCbm=val("exwCbm")
+
+let rate=val("rate")
+let logistics=val("logistics")
+let cfr=val("cfr")
+
+let cbmBuy=val("cbmBuy")
+let cbmSell=val("cbmSell")
+
+let thSell=thickness+0.5
+document.getElementById("thSell").innerText=thSell
+
+let pcs=bundles*pcsBundle
+document.getElementById("pcs").innerText=format(pcs)
+
+let cbmDiff=cbmSell-cbmBuy
+document.getElementById("cbmDiff").innerText=format(cbmDiff)
+
+let cost=0
+
+if(exwPcs>0)
+cost=exwPcs*pcs*rate
+else
+cost=exwCbm*cbmBuy*rate
+
+cost+=logistics
+
+let sell=cfr
+
+let profit=sell-cost
+
+let profitCbm=0
+if(cbmSell>0) profitCbm=profit/cbmSell
+
+let profitTotal=document.getElementById("profitTotal")
+let profitCbmBox=document.getElementById("profitCbm")
+
+profitTotal.innerText=format(Math.round(profit))
+profitCbmBox.innerText=format(Math.round(profitCbm))
+
+if(profit>=0){
+profitTotal.className="result blue"
+profitCbmBox.className="result blue"
+}
+else{
+profitTotal.className="result red"
+profitCbmBox.className="result red"
+}
+
+document.querySelectorAll("input").forEach(i=>{
+let v=i.value.replace(/,/g,'')
+if(v!="") i.value=format(v)
+})
+
+}
+
+</script>
+
+</body>
+</html>
